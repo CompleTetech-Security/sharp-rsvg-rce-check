@@ -77,3 +77,5 @@ Copyright © 2026 CompleteTech LLC. [AGPL-3.0](LICENSE), or a separate [commerci
 Built by [CompleteTech LLC](https://complete.tech) · Innovation at Every Integration
 
 An interruption after a complete report is published preserves that report and exits 130.
+
+If an interrupt leaves file publication indeterminate, the checker exits 130 without retrying. Inspect the output before retrying; the diagnostic does not establish whether publication succeeded.
