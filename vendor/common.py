@@ -517,8 +517,9 @@ footer{font-size:.85rem;color:var(--muted)}@media print{body{background:white;co
         + " · SHA-256 " + esc(report["rules"]["sha256"] or "not supplied") + "</footer></main></body></html>\n"
 
 
-def save_report(path, text, force=False, protected_paths=()):
-    """Atomic publication; never overwrite an input or follow an output symlink."""
+def save_report(path, text, force=False, protected_paths=(), state=None):
+    """Atomic publication with protected inputs and interrupt ownership tracking."""
+    state = {} if state is None else state
     target = Path(path)
     if target.is_symlink():
         raise ContractError("output symlink is not permitted")
@@ -538,10 +539,20 @@ def save_report(path, text, force=False, protected_paths=()):
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
-        if force:
-            os.replace(temporary, target)
-        else:
-            os.link(temporary, target)
+            staged_identity = os.fstat(stream.fileno())
+        try:
+            if force:
+                os.replace(temporary, target)
+            else:
+                os.link(temporary, target)
+            state["published"] = True
+        except KeyboardInterrupt:
+            try:
+                if os.path.samestat(staged_identity, os.stat(target, follow_symlinks=False)):
+                    state["published"] = True
+            except OSError:
+                pass
+            raise
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)

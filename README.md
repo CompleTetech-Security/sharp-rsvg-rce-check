@@ -75,3 +75,5 @@ Tests use synthetic local fixtures. CI is configured for Python 3.10 and 3.14 on
 Copyright © 2026 CompleteTech LLC. [AGPL-3.0](LICENSE), or a separate [commercial license](LICENSING.md). Names and brand assets have separate [terms](BRAND_ASSETS.md).
 
 Built by [CompleteTech LLC](https://complete.tech) · Innovation at Every Integration
+
+An interruption after a complete report is published preserves that report and exits 130.
