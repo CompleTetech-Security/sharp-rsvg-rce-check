@@ -169,7 +169,8 @@ def assess_record(raw):
                        recommendation=RECOMMENDATION, sources=SOURCES)
 
 
-def publish_results(args, results, protected, *, complete):
+def publish_results(args, results, protected, *, complete, state=None):
+    state = {} if state is None else state
     report = make_report(TOOL_NAME, TOOL_VERSION, SNAPSHOT_ID, RULE_DATE, results,
                          complete=complete, limitations=LIMITATIONS,
                          snapshot_digest=snapshot_digest(RULE_SNAPSHOT))
@@ -177,7 +178,9 @@ def publish_results(args, results, protected, *, complete):
     if args.output:
         save_report(args.output, rendered, force=args.force, protected_paths=protected)
     else:
+        state["stdout_started"] = True
         sys.stdout.write(rendered)
+    state["published"] = True
 
 
 def build_parser():
@@ -214,6 +217,7 @@ def main(argv=None):
     if not args.inventory and not (args.sharp_versions or args.librsvg_versions):
         parser.error("provide --inventory, --sharp-version or --librsvg-version")
     results, protected = [], [Path(__file__)]
+    publication = {"stdout_started": False, "published": False}
     if args.inventory:
         protected.append(args.inventory)
     if args.logo:
@@ -227,15 +231,18 @@ def main(argv=None):
             records = [normalize_record({"asset_id": "asset-0001", **selected})]
         for record in records:
             results.append(assess_record(record))
-        publish_results(args, results, protected, complete=True)
+        publish_results(args, results, protected, complete=True, state=publication)
         if args.fail_on_finding and any(result["version_assessment"] == "affected" for result in results):
             return 1
         if args.fail_on_unknown and any(result["version_assessment"] == "unknown" or (result["version_assessment"] == "affected" and any(condition["state"] in {"unknown", "conflicting"} for condition in result["preconditions"])) for result in results):
             return 1
         return 0
     except KeyboardInterrupt:
+        if publication["stdout_started"] or publication["published"]:
+            sys.stderr.write("Assessment interrupted after output started; stdout may be truncated and no second report is written.\n")
+            return 130
         try:
-            publish_results(args, results, protected, complete=False)
+            publish_results(args, results, protected, complete=False, state=publication)
             sys.stderr.write("Assessment interrupted; completed results preserved in an incomplete report.\n")
         except (ValueError, OSError, KeyboardInterrupt):
             sys.stderr.write("Assessment interrupted; incomplete report could not be written.\n")

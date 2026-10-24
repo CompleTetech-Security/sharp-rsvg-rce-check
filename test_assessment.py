@@ -248,6 +248,26 @@ class CliTests(unittest.TestCase):
         self.assertEqual("summary", rows[0]["record_type"])
         self.assertEqual("False", rows[0]["complete"])
 
+    def test_interrupted_partial_stdout_never_appends_another_report(self):
+        class PartialSink:
+            def __init__(self):
+                self.calls = 0
+                self.prefix = ""
+
+            def write(self, text):
+                self.calls += 1
+                self.prefix += text[:32]
+                raise KeyboardInterrupt
+
+        sink = PartialSink()
+        error = io.StringIO()
+        with contextlib.redirect_stdout(sink), contextlib.redirect_stderr(error):
+            code = check.main(self.BASE)
+        self.assertEqual(130, code)
+        self.assertEqual(1, sink.calls)
+        self.assertEqual(32, len(sink.prefix))
+        self.assertIn("no second report", error.getvalue())
+
     def test_controlled_errors_do_not_echo_input_paths(self):
         code, _, error = run_cli(["--inventory", "/synthetic-private-directory/secret.json"])
         self.assertEqual(2, code)

@@ -58,7 +58,7 @@ An affected official bundle is `precondition_present` only when all four operato
 | `2` | Argument/input/output error, hard limit or schema validation failure. |
 | `130` | Interrupted; completed assets are preserved with `complete=false` if report publication succeeds. |
 
-A reported fixed component does not fail the unknown gate solely for missing optional platform or configuration evidence. Read the component name: a global result classifies the independently supplied native library, not an installed Sharp package. Repeated interruption or an unwritable output can prevent recovery and is reported through stderr.
+A reported fixed component does not fail the unknown gate solely for missing optional platform or configuration evidence. Read the component name: a global result classifies the independently supplied native library, not an installed Sharp package. Repeated interruption or an unwritable output can prevent recovery and is reported through stderr. Once stdout publication starts, interruption can leave a partial document; recovery never appends a second report. A completed publication is not retried.
 
 ## Reproducibility
 
