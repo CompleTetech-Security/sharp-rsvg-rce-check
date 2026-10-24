@@ -1,0 +1,42 @@
+{
+  "id": "CVE-2026-96889",
+  "aliases": [
+    "GHSA-wq5f-xc86-pv6w"
+  ],
+  "slug": "sharp-rsvg-rce-check",
+  "title": "Sharp librsvg memory vulnerability",
+  "packages": [
+    "sharp"
+  ],
+  "affected": "<0.35.5",
+  "fixed": "0.35.5",
+  "upstream_fixed": "librsvg 2.63.2",
+  "published": "2026-09-30",
+  "preconditions": [
+    "glibc Linux for documented RCE conditions",
+    "SVG decoding",
+    "runtime hardening including Node PIE status",
+    "untrusted SVG reaches decoder"
+  ],
+  "notes": [
+    "Global librsvg overrides need independent version evidence. Blocking VipsForeignLoadSvg mitigates SVG decoding; PIE mitigates RCE but does not establish library patch state. Unknown libc/PIE stays unknown."
+  ],
+  "sources": [
+    "https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w",
+    "https://github.com/advisories/GHSA-wq5f-xc86-pv6w"
+  ],
+  "verification": "verified",
+  "category": "Packages",
+  "status": "new",
+  "implementation_status": "planned",
+  "verified_at": "2026-10-23",
+  "repository_url": "https://github.com/CompleteTech-LLC/sharp-rsvg-rce-check",
+  "schema_version": "1.0",
+  "record_type": "research_only",
+  "detection_enabled": false,
+  "implementation_complete": false,
+  "assessment_performed": false,
+  "exploitability": "not_tested",
+  "scope_policy": "One distinct exploit per repository; aliases and affected products share this scope.",
+  "research_notice": "Source research for a planned checker; not an executable rule or assessment result."
+}
