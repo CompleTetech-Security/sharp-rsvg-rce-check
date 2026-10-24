@@ -28,15 +28,24 @@
   "verification": "verified",
   "category": "Packages",
   "status": "new",
-  "implementation_status": "planned",
-  "verified_at": "2026-10-23",
-  "repository_url": "https://github.com/CompleteTech-LLC/sharp-rsvg-rce-check",
+  "implementation_status": "implemented",
+  "verified_at": "2026-10-24",
+  "repository_url": "https://github.com/completetech-security/sharp-rsvg-rce-check",
   "schema_version": "1.0",
-  "record_type": "research_only",
-  "detection_enabled": false,
-  "implementation_complete": false,
+  "record_type": "implemented_rule",
+  "detection_enabled": true,
+  "implementation_complete": true,
   "assessment_performed": false,
   "exploitability": "not_tested",
   "scope_policy": "One distinct exploit per repository; aliases and affected products share this scope.",
-  "research_notice": "Source research for a planned checker; not an executable rule or assessment result."
+  "research_notice": "Original research foundation retained in research_origin and Git history. Offline evidence implementation; no real asset assessment is claimed.",
+  "research_origin": {
+    "record_type": "research_only",
+    "verified_at": "2026-10-23",
+    "detection_enabled": false,
+    "implementation_status": "planned",
+    "notice": "Source research for a planned checker; not an executable rule or assessment result."
+  },
+  "implementation_scope": "Offline operator-supplied evidence only. No application execution, image decoding, network scanning, exploit verification or compromise detection.",
+  "native_library_policy": "Global librsvg requires independent upstream provenance and exact version evidence. 2.63.2+ within 2.63 is reported remediation; earlier global versions are unknown because no independent affected-range lower bound is published."
 }

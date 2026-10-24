@@ -1,7 +1,7 @@
 # Licensing
 
 sharp-rsvg-rce-check uses the same licensing model as CompleteTech LLC's
-[node2shell-check](https://github.com/CompleteTech-LLC/node2shell-check) and [php2shell-check](https://github.com/CompleteTech-LLC/php2shell-check): GNU AGPL-3.0 or a separate commercial license from CompleteTech LLC.
+[node2shell-check](https://github.com/completetech-security/node2shell-check) and [php2shell-check](https://github.com/completetech-security/php2shell-check): GNU AGPL-3.0 or a separate commercial license from CompleteTech LLC.
 
 ## Open source: AGPL-3.0
 

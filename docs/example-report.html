@@ -1,0 +1,237 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>Security evidence report</title><style>
+:root{color-scheme:light dark;--bg:#f8fafc;--surface:#fff;--ink:#172033;--muted:#526077;--accent:#1e3a8a;--line:#d8dee9}
+@media(prefers-color-scheme:dark){:root{--bg:#0f172a;--surface:#1e293b;--ink:#f1f5f9;--muted:#a8bad2;--accent:#93c5fd;--line:#3c4b61}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:32px 20px}
+header{border-bottom:4px solid var(--accent);padding-bottom:20px}.logo{height:64px;max-width:240px;object-fit:contain;float:right;background:#f8fafc;padding:6px;border-radius:8px}h1{margin:.2em 0}h2{font-size:1.2rem}.eyebrow,.status{color:var(--accent);font-weight:700}
+article,.callout{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin:20px 0}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem}p,li,code{overflow-wrap:anywhere}a{color:var(--accent)}summary{cursor:pointer}
+footer{font-size:.85rem;color:var(--muted)}@media print{body{background:white;color:black}article{break-inside:avoid}details>summary{display:none}details>ul,details>pre{display:block}}
+</style></head><body><main><header><div class='eyebrow'>CompleteTech LLC</div><h1>Security evidence report</h1><p>sharp-rsvg-rce-check 0.1.0 · rules verified 2026-10-24</p></header><div class='callout'><strong>Completed assessment</strong><p>Local exploitability is not tested. Version, configuration, candidate source patterns and external exploitation reports are separate evidence.</p><p>precondition_present: 1 · mitigated_configuration: 1 · fixed_version_reported: 1 · unknown: 1</p><ul><li>Offline operator-supplied evidence only; library selection, deployed versions, provenance and effective mitigations are not independently attested.</li><li>No network requests, application execution, image decoding, exploitation, reachability test or compromise detection is performed.</li><li>The Sharp comparison covers exact stable 0.0-0.35 versions. Global librsvg has a documented remediation build, not a published independent affected-version range; only stable 2.63.2+ within 2.63 is accepted as reported remediation.</li><li>PIE is an RCE mitigation, not a library patch or a guarantee against other memory-corruption impact. Unknown libc or PIE remains unknown.</li></ul></div><article><h2>synthetic-bundle · Sharp (bundled librsvg)</h2><p class='status'>precondition_present</p><p>Reported version: <code>0.35.4</code> · Rule: <code>CVE-2026-96889</code> · Exploitability: <code>not_tested</code></p><p>For official bundled binaries, upgrade Sharp to 0.35.5 or a later supported patched release. For a global library, independently verify the selected librsvg and apply the upstream 2.63.2 fix or a documented vendor fix. Rebuild/redeploy and verify the actual linkage. Effective VipsForeignLoadSvg blocking and Node PIE are separate mitigations; neither attests the library patch set.</p><ul><li>The reported official Sharp bundle is below 0.35.5.</li><li>Version, platform, libc, effective mitigation and input-path observations are operator claims; local exploitability remains not_tested.</li><li>A mitigated configuration preserves an affected library/package assessment and does not establish safety or absence of prior compromise.</li></ul><details><summary>Evidence and assessment dimensions</summary><ul><li>version: present — The reported official Sharp bundle is below 0.35.5.</li><li>inventory: present — Operator-reported library selection: bundled; linkage is not independently verified.</li><li>inventory: present — Sharp version observation: 0.35.4.</li><li>inventory: unknown — librsvg version observation: missing, qualified or conflicting.</li><li>configuration: present — Reported platform: linux; reported libc: glibc. Other platforms do not establish that the underlying memory bug is absent.</li><li>configuration: present — Reported effective SVG decoder state: enabled. A blocked claim must cover VipsForeignLoadSvg in the deployed process.</li><li>configuration: present — Reported Node executable PIE state: disabled. No binary inspection is performed.</li><li>configuration: present — Operator-reviewed untrusted SVG input path: present. No data-flow or reachability test is performed.</li></ul><pre>{
+  &quot;confidence&quot;: &quot;low&quot;,
+  &quot;mitigation&quot;: {
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;unknown&quot;
+  },
+  &quot;preconditions&quot;: [
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;glibc-linux&quot;
+      ],
+      &quot;id&quot;: &quot;glibc-linux&quot;,
+      &quot;state&quot;: &quot;present&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;svg-decoding&quot;
+      ],
+      &quot;id&quot;: &quot;svg-decoding&quot;,
+      &quot;state&quot;: &quot;present&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;node-without-pie&quot;
+      ],
+      &quot;id&quot;: &quot;node-without-pie&quot;,
+      &quot;state&quot;: &quot;present&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;untrusted-svg-input&quot;
+      ],
+      &quot;id&quot;: &quot;untrusted-svg-input&quot;,
+      &quot;state&quot;: &quot;present&quot;
+    }
+  ],
+  &quot;reachability&quot;: {
+    &quot;asset_id&quot;: &quot;synthetic-bundle&quot;,
+    &quot;authorized&quot;: false,
+    &quot;component&quot;: &quot;Sharp (bundled librsvg)&quot;,
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;not_tested&quot;
+  },
+  &quot;threat&quot;: {
+    &quot;kev&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    &quot;vendor_exploitation&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  },
+  &quot;version_assessment&quot;: &quot;affected&quot;
+}</pre></details><p><a href="https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w">Source</a> <a href="https://github.com/advisories/GHSA-wq5f-xc86-pv6w">Source</a></p></article><article><h2>synthetic-pie-mitigation · Sharp (bundled librsvg)</h2><p class='status'>mitigated_configuration</p><p>Reported version: <code>0.35.4</code> · Rule: <code>CVE-2026-96889</code> · Exploitability: <code>not_tested</code></p><p>For official bundled binaries, upgrade Sharp to 0.35.5 or a later supported patched release. For a global library, independently verify the selected librsvg and apply the upstream 2.63.2 fix or a documented vendor fix. Rebuild/redeploy and verify the actual linkage. Effective VipsForeignLoadSvg blocking and Node PIE are separate mitigations; neither attests the library patch set.</p><ul><li>The reported official Sharp bundle is below 0.35.5.</li><li>Version, platform, libc, effective mitigation and input-path observations are operator claims; local exploitability remains not_tested.</li><li>A mitigated configuration preserves an affected library/package assessment and does not establish safety or absence of prior compromise.</li></ul><details><summary>Evidence and assessment dimensions</summary><ul><li>version: present — The reported official Sharp bundle is below 0.35.5.</li><li>inventory: present — Operator-reported library selection: bundled; linkage is not independently verified.</li><li>inventory: present — Sharp version observation: 0.35.4.</li><li>inventory: unknown — librsvg version observation: missing, qualified or conflicting.</li><li>configuration: unknown — Reported platform: unknown; reported libc: unknown. Other platforms do not establish that the underlying memory bug is absent.</li><li>configuration: unknown — Reported effective SVG decoder state: unknown. A blocked claim must cover VipsForeignLoadSvg in the deployed process.</li><li>configuration: absent — Reported Node executable PIE state: enabled. No binary inspection is performed.</li><li>configuration: unknown — Operator-reviewed untrusted SVG input path: unknown. No data-flow or reachability test is performed.</li><li>configuration: present — Node PIE is operator-reported; it mitigates the documented RCE condition, not other memory-corruption impacts or library patch state.</li></ul><pre>{
+  &quot;confidence&quot;: &quot;low&quot;,
+  &quot;mitigation&quot;: {
+    &quot;evidence_ids&quot;: [
+      &quot;node-pie&quot;
+    ],
+    &quot;state&quot;: &quot;observed&quot;
+  },
+  &quot;preconditions&quot;: [
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;glibc-linux&quot;
+      ],
+      &quot;id&quot;: &quot;glibc-linux&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;svg-decoding&quot;
+      ],
+      &quot;id&quot;: &quot;svg-decoding&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;node-without-pie&quot;
+      ],
+      &quot;id&quot;: &quot;node-without-pie&quot;,
+      &quot;state&quot;: &quot;absent&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;untrusted-svg-input&quot;
+      ],
+      &quot;id&quot;: &quot;untrusted-svg-input&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  ],
+  &quot;reachability&quot;: {
+    &quot;asset_id&quot;: &quot;synthetic-pie-mitigation&quot;,
+    &quot;authorized&quot;: false,
+    &quot;component&quot;: &quot;Sharp (bundled librsvg)&quot;,
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;not_tested&quot;
+  },
+  &quot;threat&quot;: {
+    &quot;kev&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    &quot;vendor_exploitation&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  },
+  &quot;version_assessment&quot;: &quot;affected&quot;
+}</pre></details><p><a href="https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w">Source</a> <a href="https://github.com/advisories/GHSA-wq5f-xc86-pv6w">Source</a></p></article><article><h2>synthetic-global-fixed · librsvg (global, used by Sharp)</h2><p class='status'>fixed_version_reported</p><p>Reported version: <code>2.63.2</code> · Rule: <code>CVE-2026-96889</code> · Exploitability: <code>not_tested</code></p><p>For official bundled binaries, upgrade Sharp to 0.35.5 or a later supported patched release. For a global library, independently verify the selected librsvg and apply the upstream 2.63.2 fix or a documented vendor fix. Rebuild/redeploy and verify the actual linkage. Effective VipsForeignLoadSvg blocking and Node PIE are separate mitigations; neither attests the library patch set.</p><ul><li>The independently reported global librsvg meets the documented 2.63.2 remediation build in the reviewed 2.63 line.</li><li>Version, platform, libc, effective mitigation and input-path observations are operator claims; local exploitability remains not_tested.</li><li>A mitigated configuration preserves an affected library/package assessment and does not establish safety or absence of prior compromise.</li></ul><details><summary>Evidence and assessment dimensions</summary><ul><li>version: present — The independently reported global librsvg meets the documented 2.63.2 remediation build in the reviewed 2.63 line.</li><li>inventory: present — Operator-reported library selection: global; linkage is not independently verified.</li><li>inventory: present — Sharp version observation: 0.35.4.</li><li>inventory: present — librsvg version observation: 2.63.2.</li><li>configuration: unknown — Reported platform: unknown; reported libc: unknown. Other platforms do not establish that the underlying memory bug is absent.</li><li>configuration: unknown — Reported effective SVG decoder state: unknown. A blocked claim must cover VipsForeignLoadSvg in the deployed process.</li><li>configuration: unknown — Reported Node executable PIE state: unknown. No binary inspection is performed.</li><li>configuration: unknown — Operator-reviewed untrusted SVG input path: unknown. No data-flow or reachability test is performed.</li></ul><pre>{
+  &quot;confidence&quot;: &quot;low&quot;,
+  &quot;mitigation&quot;: {
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;unknown&quot;
+  },
+  &quot;preconditions&quot;: [
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;glibc-linux&quot;
+      ],
+      &quot;id&quot;: &quot;glibc-linux&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;svg-decoding&quot;
+      ],
+      &quot;id&quot;: &quot;svg-decoding&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;node-without-pie&quot;
+      ],
+      &quot;id&quot;: &quot;node-without-pie&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;untrusted-svg-input&quot;
+      ],
+      &quot;id&quot;: &quot;untrusted-svg-input&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  ],
+  &quot;reachability&quot;: {
+    &quot;asset_id&quot;: &quot;synthetic-global-fixed&quot;,
+    &quot;authorized&quot;: false,
+    &quot;component&quot;: &quot;librsvg (global, used by Sharp)&quot;,
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;not_tested&quot;
+  },
+  &quot;threat&quot;: {
+    &quot;kev&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    &quot;vendor_exploitation&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  },
+  &quot;version_assessment&quot;: &quot;fixed_reported&quot;
+}</pre></details><p><a href="https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w">Source</a> <a href="https://github.com/advisories/GHSA-wq5f-xc86-pv6w">Source</a></p></article><article><h2>synthetic-unknown-linkage · Sharp librsvg selection</h2><p class='status'>unknown</p><p>Reported version: <code>unknown</code> · Rule: <code>CVE-2026-96889</code> · Exploitability: <code>not_tested</code></p><p>For official bundled binaries, upgrade Sharp to 0.35.5 or a later supported patched release. For a global library, independently verify the selected librsvg and apply the upstream 2.63.2 fix or a documented vendor fix. Rebuild/redeploy and verify the actual linkage. Effective VipsForeignLoadSvg blocking and Node PIE are separate mitigations; neither attests the library patch set.</p><ul><li>Library selection is unknown; a patched Sharp package cannot establish the version of a possible global librsvg.</li><li>Version, platform, libc, effective mitigation and input-path observations are operator claims; local exploitability remains not_tested.</li><li>A mitigated configuration preserves an affected library/package assessment and does not establish safety or absence of prior compromise.</li></ul><details><summary>Evidence and assessment dimensions</summary><ul><li>version: unknown — Library selection is unknown; a patched Sharp package cannot establish the version of a possible global librsvg.</li><li>inventory: unknown — Operator-reported library selection: unknown; linkage is not independently verified.</li><li>inventory: present — Sharp version observation: 0.35.5.</li><li>inventory: unknown — librsvg version observation: missing, qualified or conflicting.</li><li>configuration: unknown — Reported platform: unknown; reported libc: unknown. Other platforms do not establish that the underlying memory bug is absent.</li><li>configuration: unknown — Reported effective SVG decoder state: unknown. A blocked claim must cover VipsForeignLoadSvg in the deployed process.</li><li>configuration: unknown — Reported Node executable PIE state: unknown. No binary inspection is performed.</li><li>configuration: unknown — Operator-reviewed untrusted SVG input path: unknown. No data-flow or reachability test is performed.</li></ul><pre>{
+  &quot;confidence&quot;: &quot;unknown&quot;,
+  &quot;mitigation&quot;: {
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;unknown&quot;
+  },
+  &quot;preconditions&quot;: [
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;glibc-linux&quot;
+      ],
+      &quot;id&quot;: &quot;glibc-linux&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;svg-decoding&quot;
+      ],
+      &quot;id&quot;: &quot;svg-decoding&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;node-without-pie&quot;
+      ],
+      &quot;id&quot;: &quot;node-without-pie&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    {
+      &quot;evidence_ids&quot;: [
+        &quot;untrusted-svg-input&quot;
+      ],
+      &quot;id&quot;: &quot;untrusted-svg-input&quot;,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  ],
+  &quot;reachability&quot;: {
+    &quot;asset_id&quot;: &quot;synthetic-unknown-linkage&quot;,
+    &quot;authorized&quot;: false,
+    &quot;component&quot;: &quot;Sharp librsvg selection&quot;,
+    &quot;evidence_ids&quot;: [],
+    &quot;state&quot;: &quot;not_tested&quot;
+  },
+  &quot;threat&quot;: {
+    &quot;kev&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    },
+    &quot;vendor_exploitation&quot;: {
+      &quot;as_of&quot;: null,
+      &quot;source&quot;: null,
+      &quot;state&quot;: &quot;unknown&quot;
+    }
+  },
+  &quot;version_assessment&quot;: &quot;unknown&quot;
+}</pre></details><p><a href="https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w">Source</a> <a href="https://github.com/advisories/GHSA-wq5f-xc86-pv6w">Source</a></p></article><footer>Schema 1.0 · Snapshot sharp-rsvg-2026-10-24.1 · SHA-256 bcc630f25735dad4ed04e4f5ae95503bb8c19f70b1cdc797a3b1be3cde265613</footer></main></body></html>

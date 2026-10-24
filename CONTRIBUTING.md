@@ -1,7 +1,7 @@
 # Contributing
 
-This repository is initialized for **CVE-2026-96889**. Checker implementation is
-pending; start with the [implementation checklist](docs/IMPLEMENTATION.md).
+This repository implements an offline evidence checker for **CVE-2026-96889**.
+Start with the [implementation checklist](docs/IMPLEMENTATION.md).
 Submit focused pull requests for this exploit. Report flaws requiring private
 disclosure according to [SECURITY.md](SECURITY.md).
 
@@ -15,8 +15,10 @@ before encoding affected or fixed ranges. Preserve evidence provenance and
 Use offline inventories, synthetic examples, mocks, and local fixtures. Do not
 commit credentials, real target lists, private reports, or exploit payloads.
 Network detection must be justified, optional, ordinary, bounded, and authorized.
-Document implemented behavior and actual commands; no checker commands or test
-suite are available in this foundation yet.
+Document implemented behavior and actual commands. Run the deterministic build
+check, synthetic tests, CLI help and whitespace checks listed in AGENTS.md.
+Keep bundled/global library selection and independent native-library provenance
+separate. SVG blocking and Node PIE are mitigations, not library patch claims.
 
 ## Licensing of contributions
 

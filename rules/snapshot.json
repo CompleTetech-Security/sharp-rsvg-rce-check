@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "snapshot_id": "sharp-rsvg-2026-10-24.1",
+  "created_at": "2026-10-24",
+  "rules": [
+    {
+      "id": "CVE-2026-96889",
+      "revision": 1,
+      "title": "Sharp librsvg memory vulnerability",
+      "component": "sharp",
+      "advisories": ["CVE-2026-96889", "GHSA-wq5f-xc86-pv6w"],
+      "enabled": true,
+      "verification_status": "verified",
+      "verified_at": "2026-10-24",
+      "version_scheme": "semver",
+      "affected": [
+        {"branch": "official Sharp bundles through 0.35.x", "introduced": null, "fixed": "0.35.5", "last_affected": null, "source_ids": ["sharp-maintainer"]}
+      ],
+      "preconditions": [
+        {"id": "glibc-linux", "description": "The documented possible RCE conditions include glibc-based Linux; platform absence does not establish absence of the memory bug.", "source_ids": ["sharp-maintainer"]},
+        {"id": "svg-decoding", "description": "SVG decoding is enabled in the deployed Sharp process.", "source_ids": ["sharp-maintainer"]},
+        {"id": "node-without-pie", "description": "The deployed Node executable lacks PIE, the documented RCE mitigation.", "source_ids": ["sharp-maintainer"]},
+        {"id": "untrusted-svg-input", "description": "Operator review indicates an untrusted SVG input path; this tool does not test data flow or reachability.", "source_ids": ["sharp-maintainer"]}
+      ],
+      "mitigations": [
+        {"id": "svg-block", "description": "Effective blocking of VipsForeignLoadSvg prevents Sharp SVG decoding; source text alone is insufficient.", "source_ids": ["sharp-maintainer"]},
+        {"id": "node-pie", "description": "Node PIE mitigates the documented RCE condition; it does not establish library patch state or remove other memory-corruption impact.", "source_ids": ["sharp-maintainer"]}
+      ],
+      "sources": [
+        {"id": "sharp-maintainer", "url": "https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w", "publisher": "Sharp maintainer", "verified_at": "2026-10-24"},
+        {"id": "github-advisory", "url": "https://github.com/advisories/GHSA-wq5f-xc86-pv6w", "publisher": "GitHub Advisory Database", "verified_at": "2026-10-24"}
+      ],
+      "notes": [
+        "Maintainer advisory: Sharp <0.35.5; patched >=0.35.5. The shipped snapshot restricts future comparison to the reviewed 0.35 release line and older 0.x versions.",
+        "Sharp 0.35.5 provides librsvg 2.63.2 in its official prebuilt binaries. Custom and global linkage require independent evidence.",
+        "The advisory names librsvg 2.63.2 remediation but publishes no separate librsvg affected-range lower bound. Older global librsvg remains unknown requiring remediation review; only stable 2.63.2+ in the 2.63 line is accepted as reported remediation.",
+        "The GitHub database patched-version header says 0.35.5; its description agrees with the maintainer. The maintainer's >=0.35.5 statement governs the bundled comparison.",
+        "Every assessment is operator-reported evidence. Exploitability and reachability remain not_tested."
+      ]
+    }
+  ]
+}

@@ -14,14 +14,18 @@ revision when possible. No response-time guarantee is made.
 
 ## Advisory scope and implementation status
 
-This project is dedicated to **CVE-2026-96889**. It currently provides research
-and an implementation plan. No scanner, exploit verification, or security
-assessment has been implemented. The advisory record is explicitly disabled.
+This project is dedicated to **CVE-2026-96889**. Its offline checker assesses
+explicit operator-provided evidence. It does not execute applications, decode
+images, make network requests, test exploitability or detect prior compromise.
 
-Future output must distinguish reported versions and configuration hints from
-confirmed exposure. Exploitability remains `not_tested`. Use future assessment
-features only for authorized targets; project development alone authorizes no
+Output distinguishes reported versions and configuration observations from
+confirmed exposure. Exploitability remains `not_tested`. Use assessment
+features only for authorized assets; project development alone authorizes no
 network scanning. Keep real inventories and assessment results outside the repo.
+
+A Sharp package number cannot attest a global librsvg, a vendor backport or a
+custom build. Work from a stable evidence copy; bounded regular-file checks do
+not provide an operating-system sandbox against concurrent filesystem changes.
 
 For a vulnerability in the affected upstream product or a service you assess,
 follow that vendor's or service owner's published security-reporting process.

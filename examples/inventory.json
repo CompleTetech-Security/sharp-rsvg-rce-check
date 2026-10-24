@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "records": [
+    {
+      "asset_id": "synthetic-bundle",
+      "library_source": "bundled",
+      "sharp_versions": ["0.35.4"],
+      "sharp_build_source": "upstream",
+      "platform": "linux",
+      "libc": "glibc",
+      "node_pie": "disabled",
+      "svg_decoder": "enabled",
+      "untrusted_svg": "present"
+    },
+    {
+      "asset_id": "synthetic-pie-mitigation",
+      "library_source": "bundled",
+      "sharp_versions": ["0.35.4"],
+      "sharp_build_source": "upstream",
+      "node_pie": "enabled"
+    },
+    {
+      "asset_id": "synthetic-global-fixed",
+      "library_source": "global",
+      "sharp_versions": ["0.35.4"],
+      "librsvg_versions": ["2.63.2"],
+      "librsvg_build_source": "upstream"
+    },
+    {
+      "asset_id": "synthetic-unknown-linkage",
+      "sharp_versions": ["0.35.5"]
+    }
+  ]
+}
