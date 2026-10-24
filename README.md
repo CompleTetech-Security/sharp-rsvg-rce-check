@@ -1,11 +1,25 @@
-# sharp-rsvg-rce-check
+<p align="center">
+  <img src="docs/images/banner.png" alt="sharp-rsvg-rce-check by CompleteTech LLC" width="100%">
+</p>
 
-**Sharp librsvg memory vulnerability**  
-By [CompleteTech LLC](https://complete.tech)
+<p align="center">
+  <img src="https://img.shields.io/badge/status-checker%20pending-F59E0B" alt="Status: checker pending">
+  <img src="https://img.shields.io/badge/detection-disabled-64748B" alt="Detection disabled">
+  <a href="LICENSING.md"><img src="https://img.shields.io/badge/license-AGPL--3.0%20%7C%20commercial-64748B" alt="AGPL-3.0 or commercial license"></a>
+</p>
+
+<p align="center">
+  <b>Planned checker for the Sharp librsvg memory vulnerability</b><br>
+  CVE-2026-96889 · GHSA-wq5f-xc86-pv6w · research only, implementation pending
+</p>
+
+---
 
 > **Repository initialized; checker implementation pending.**
 > This project currently contains research and an implementation checklist.
 > It does not assess systems or provide an executable detection rule.
+
+`sharp-rsvg-rce-check` is the dedicated repository for **CVE-2026-96889**, a memory vulnerability in the librsvg SVG decoder used by [Sharp](https://github.com/lovell/sharp). The intended checker will follow the evidence and reporting conventions of [node2shell-check](https://github.com/CompleteTech-LLC/node2shell-check) and [php2shell-check](https://github.com/CompleteTech-LLC/php2shell-check). None of it is implemented yet.
 
 ## One exploit, one repository
 
@@ -21,34 +35,11 @@ This repository is dedicated to **CVE-2026-96889**. Aliases and multiple affecte
 products identify this same exploit; they do not create additional scanner scopes.
 Future fixes for different vulnerabilities belong in independent repositories.
 
-## Advisory snapshot
+## Status and what's planned
 
-The following is source-backed research for implementation planning. It is not a
-test result, a live rule feed, or an attestation that a deployed system is patched.
+There are currently **no checker commands, install steps, downloadable binaries, test results, or CI**. Work is tracked in the [implementation checklist](docs/IMPLEMENTATION.md).
 
-### Affected versions or conditions
-
-<0.35.5
-
-### Reported fixes or remediation
-
-0.35.5
-
-### Deployment preconditions to establish
-
-- glibc Linux for documented RCE conditions
-- SVG decoding
-- runtime hardening including Node PIE status
-- untrusted SVG reaches decoder
-
-### Evidence notes and limitations
-
-- Global librsvg overrides need independent version evidence. Blocking VipsForeignLoadSvg mitigates SVG decoding; PIE mitigates RCE but does not establish library patch state. Unknown libc/PIE stays unknown.
-
-## Planned checker behavior
-
-The intended checker follows the evidence and reporting conventions of
-[node2shell-check](https://github.com/CompleteTech-LLC/node2shell-check) and [php2shell-check](https://github.com/CompleteTech-LLC/php2shell-check):
+The intended checker is planned to:
 
 - Prefer offline version, inventory, or configuration evidence appropriate to this exploit.
 - Keep version state, documented preconditions, evidence provenance, and uncertainty separate.
@@ -57,23 +48,71 @@ The intended checker follows the evidence and reporting conventions of
 - Produce human-readable findings and machine-readable JSON/CSV; document each output before release.
 - Add bounded, explicitly selected passive network behavior only if it provides useful evidence.
 
-These capabilities are **planned**, not implemented. There are currently no
-checker commands, downloadable binaries, test results, or CI claims.
+## Planned report layout
 
-## Start here
+The image below is an **illustrative mock-up of a possible layout**. It is not produced by any tool, contains only placeholder rows built from reserved `example.*` domains, and shows no results.
 
-1. Review [advisory.json](advisory.json) and the primary sources below.
-2. Work through the exploit-specific [implementation checklist](docs/IMPLEMENTATION.md).
-3. Read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md), and
-   [SECURITY.md](SECURITY.md) before contributing.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/report-dark.png">
+    <img src="docs/images/report-light.png" alt="Illustrative planned report layout, marked as not implemented, with placeholder rows" width="900">
+  </picture>
+</p>
 
-## Primary sources
+<p align="center"><sub>Illustrative only. No checker exists yet.</sub></p>
 
-1. [github.com](https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w)
-2. [github.com](https://github.com/advisories/GHSA-wq5f-xc86-pv6w)
+## Planned status vocabulary
 
-The research date records the supplied verification snapshot. Recheck primary
-advisories before enabling any detection logic, and retain contradictory evidence.
+These statuses come from this repository's [AGENTS.md](AGENTS.md) and [implementation checklist](docs/IMPLEMENTATION.md). They are **planned** and not emitted by anything today.
+
+| Status (planned) | Intended meaning |
+| --- | --- |
+| `potentially_affected` | Evidence matches this advisory's documented range or condition. Not confirmed exploitability. |
+| `fixed_version_reported` | A supported comparison meets the fix. Not a verified clean bill of health or a safety guarantee. |
+| `unknown` | Missing, malformed, conflicting, prerelease, vendor-built, possible-backport, or uncovered evidence. |
+
+| Package | Affected (research) | Fixed in (reported) |
+| --- | --- | --- |
+| `sharp` | `<0.35.5` | `0.35.5` |
+
+Upstream fix recorded in `advisory.json`: librsvg 2.63.2. These values are research-only and unimplemented; recheck the primary advisories before enabling any detection logic.
+
+> [!IMPORTANT]
+> **Potential exposure would not be confirmed exploitability.** A version alone cannot show that untrusted SVG reaches the decoder, the libc or PIE hardening, or a global librsvg override. Unknown libc or PIE status stays `unknown`, and `exploitability` remains `not_tested`.
+
+## Advisory snapshot
+
+The following is source-backed research for implementation planning. It is not a
+test result, a live rule feed, or an attestation that a deployed system is patched.
+
+**Affected versions or conditions:** `<0.35.5`
+
+**Reported fixes or remediation:** `0.35.5`
+
+**Deployment preconditions to establish**
+
+- glibc Linux for documented RCE conditions
+- SVG decoding
+- runtime hardening including Node PIE status
+- untrusted SVG reaches decoder
+
+**Evidence notes and limitations**
+
+- Global librsvg overrides need independent version evidence. Blocking VipsForeignLoadSvg mitigates SVG decoding; PIE mitigates RCE but does not establish library patch state. Unknown libc/PIE stays unknown.
+
+## How it will work
+
+Planned, not implemented: the checker would collect version and build evidence plus the preconditions above without executing application code or exploit payloads, then report each finding with its sources and uncertainty. See [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) for the full gated plan.
+
+## Documentation
+
+- [Implementation checklist](docs/IMPLEMENTATION.md) · [advisory.json](advisory.json)
+- [AGENTS.md](AGENTS.md) · [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md)
+
+Primary sources (the research date records the supplied verification snapshot; retain contradictory evidence):
+
+1. [github.com/lovell/sharp advisory GHSA-wq5f-xc86-pv6w](https://github.com/lovell/sharp/security/advisories/GHSA-wq5f-xc86-pv6w)
+2. [github.com/advisories/GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w)
 
 ## License
 
@@ -83,3 +122,7 @@ See [LICENSING.md](LICENSING.md) and the
 Names and branding are governed by [BRAND_ASSETS.md](BRAND_ASSETS.md).
 
 Copyright © 2026 CompleteTech LLC.
+
+<p align="center">
+  <sub>Built by <a href="https://complete.tech">CompleteTech LLC</a> · Innovation at Every Integration</sub>
+</p>
