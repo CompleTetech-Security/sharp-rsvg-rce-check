@@ -541,17 +541,27 @@ def save_report(path, text, force=False, protected_paths=(), state=None):
             os.fsync(stream.fileno())
             staged_identity = os.fstat(stream.fileno())
         try:
+            if state is not None:
+                state["publication_started"] = True
             if force:
                 os.replace(temporary, target)
             else:
                 os.link(temporary, target)
             state["published"] = True
         except KeyboardInterrupt:
+            # A second interrupt or metadata failure must not permit a retry.
             try:
-                if os.path.samestat(staged_identity, os.stat(target, follow_symlinks=False)):
-                    state["published"] = True
+                owned = os.path.samestat(staged_identity, os.stat(target, follow_symlinks=False))
+                if state is not None:
+                    if owned:
+                        state["published"] = True
+                    else:
+                        state["publication_started"] = False
+            except FileNotFoundError:
+                if state is not None:
+                    state["publication_started"] = False
             except OSError:
-                pass
+                pass  # Publication outcome remains indeterminate.
             raise
     finally:
         if temporary is not None:

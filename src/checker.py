@@ -238,6 +238,9 @@ def main(argv=None):
             return 1
         return 0
     except KeyboardInterrupt:
+        if publication.get("publication_started") and not publication["published"]:
+            sys.stderr.write("Assessment interrupted; publication outcome indeterminate; inspect the output before retrying. No retry was attempted.\n")
+            return 130
         if publication["stdout_started"] or publication["published"]:
             sys.stderr.write("Assessment interrupted after output started; stdout may be truncated and no second report is written.\n")
             return 130
