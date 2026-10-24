@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}(?![\\s\\S])",
+            "maxLength": 64
+          },
+          "sharp_versions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[^\\x00-\\x1f\\x7f-\\x9f]*(?![\\s\\S])"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "librsvg_versions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[^\\x00-\\x1f\\x7f-\\x9f]*(?![\\s\\S])"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "library_source": {
+            "type": "string",
+            "enum": [
+              "bundled",
+              "global",
+              "unknown"
+            ]
+          },
+          "sharp_build_source": {
+            "type": "string",
+            "enum": [
+              "upstream",
+              "vendor",
+              "custom",
+              "unknown"
+            ]
+          },
+          "librsvg_build_source": {
+            "type": "string",
+            "enum": [
+              "upstream",
+              "vendor",
+              "custom",
+              "unknown"
+            ]
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "linux",
+              "other",
+              "unknown"
+            ]
+          },
+          "libc": {
+            "type": "string",
+            "enum": [
+              "glibc",
+              "musl",
+              "other",
+              "unknown"
+            ]
+          },
+          "node_pie": {
+            "type": "string",
+            "enum": [
+              "enabled",
+              "disabled",
+              "unknown",
+              "conflicting"
+            ]
+          },
+          "svg_decoder": {
+            "type": "string",
+            "enum": [
+              "enabled",
+              "blocked",
+              "unknown",
+              "conflicting"
+            ]
+          },
+          "untrusted_svg": {
+            "type": "string",
+            "enum": [
+              "present",
+              "absent",
+              "unknown",
+              "conflicting"
+            ]
+          }
+        },
+        "required": [
+          "asset_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 1000
+    }
+  },
+  "required": [
+    "schema_version",
+    "records"
+  ],
+  "additionalProperties": false
+}
