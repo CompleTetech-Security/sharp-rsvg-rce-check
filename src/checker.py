@@ -176,7 +176,7 @@ def publish_results(args, results, protected, *, complete, state=None):
                          snapshot_digest=snapshot_digest(RULE_SNAPSHOT))
     rendered = canonical_json(report) if args.format == "json" else render_csv(report) if args.format == "csv" else render_html(report, brand=args.brand, logo=args.logo)
     if args.output:
-        save_report(args.output, rendered, force=args.force, protected_paths=protected)
+        save_report(args.output, rendered, force=args.force, protected_paths=protected, state=state)
     else:
         state["stdout_started"] = True
         sys.stdout.write(rendered)
