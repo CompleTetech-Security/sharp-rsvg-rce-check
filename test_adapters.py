@@ -34,6 +34,11 @@ class AdapterTests(unittest.TestCase):
             code = c.main(list(args))
         return code, out.getvalue(), err.getvalue()
 
+    def test_arrow_return_regex_body_is_opaque(self):
+        tokens = c._js_tokens("const pattern = () => /const image = require('sharp'); image(input)/;")
+        self.assertIn("@regex", [value for value, _ in tokens])
+        self.assertNotIn("require", [value for value, _ in tokens])
+
     def test_elf32_64_endianness_and_loader_hints_never_establish_mitigation(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "node.elf"
