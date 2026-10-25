@@ -596,9 +596,14 @@ def adapter_result(asset_id, component, evidence, *, version=None):
 
 def inspect_elf(path):
     """Inspect at most 64 + 57,344 + 512 bytes, never map/load/execute an ELF."""
-    fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NONBLOCK", 0))
+    before = Path(path).lstat()
+    if not stat.S_ISREG(before.st_mode):
+        raise ContractError("ELF must be a regular file, not a link or special file")
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_NOFOLLOW", 0))
     with os.fdopen(fd, "rb") as stream:
         info = os.fstat(stream.fileno())
+        if (before.st_dev, before.st_ino) != (info.st_dev, info.st_ino):
+            raise ContractError("ELF identity changed while opening")
         if not stat.S_ISREG(info.st_mode) or info.st_size > 2 * 1024**3:
             raise ContractError("ELF must be a bounded regular file")
         header = stream.read(64)
@@ -625,6 +630,8 @@ def inspect_elf(path):
         for index in range(count):
             ph = struct.unpack_from(endian + ("IIIIIIII" if bits == 1 else "IIQQQQQQ"), program_headers, index * entry_size)
             kind, segment_offset, length = (ph[0], ph[1], ph[4]) if bits == 1 else (ph[0], ph[2], ph[5])
+            if kind == 0:  # PT_NULL fields other than p_type are undefined.
+                continue
             if segment_offset + length > info.st_size:
                 raise ContractError("ELF segment is outside the file")
             if kind == 3:

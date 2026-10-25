@@ -88,6 +88,25 @@ class AdapterTests(unittest.TestCase):
             path.write_bytes(no_headers)
             self.assertEqual("shared_or_static_pie_unknown", c.inspect_elf(path)["layout"])
 
+    def test_elf_unused_null_segments_and_file_open_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "input.elf"
+            raw = bytearray(elf_fixture())
+            struct.pack_into("<I", raw, 64, 0)
+            struct.pack_into("<Q", raw, 72, 2**64 - 1)
+            path.write_bytes(raw)
+            self.assertEqual("shared_or_static_pie_unknown", c.inspect_elf(path)["layout"])
+            real_open = os.open
+            def changed_input(*args, **kwargs):
+                replacement = path.with_suffix(".new")
+                replacement.write_bytes(elf_fixture())
+                os.replace(replacement, path)
+                return real_open(*args, **kwargs)
+            with mock.patch.object(c.os, "open", side_effect=changed_input):
+                with self.assertRaises(c.ContractError): c.inspect_elf(path)
+            with mock.patch.object(c.os, "open", side_effect=AssertionError("must reject before open")):
+                with self.assertRaises(c.ContractError): c.inspect_elf(Path(directory))
+
     def test_npm_lock_versions_transitive_and_link_uncertainty(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "lock.json"
