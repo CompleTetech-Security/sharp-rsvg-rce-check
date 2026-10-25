@@ -109,6 +109,13 @@ class AdapterTests(unittest.TestCase):
             self.assertIsNone(json.loads(out)["results"][0]["component"]["version"])
             path.write_text('{"lockfileVersion":3,"packages":{"node_modules/sharp":{"version":"0.35.5","link":0}}}', encoding="utf-8")
             self.assertEqual(2, self.cli("--npm-lock", str(path), "--evidence-root", directory)[0])
+            path.write_text('{"lockfileVersion":1,"dependencies":{"image":{"version":"npm:sharp@0.35.4"}}}', encoding="utf-8")
+            code, out, _ = self.cli("--npm-lock", str(path), "--evidence-root", directory)
+            row = json.loads(out)["results"][0]
+            self.assertEqual(0, code)
+            self.assertEqual("Sharp package metadata", row["component"]["name"])
+            self.assertIsNone(row["component"]["version"])
+            self.assertEqual("unknown", row["status"])
 
     def test_cyclonedx_spdx_and_uncovered_metadata_never_infer_selection(self):
         fixtures = [
@@ -161,6 +168,11 @@ class AdapterTests(unittest.TestCase):
                 path.write_text(text, encoding="utf-8")
                 _, out, _ = self.cli("--source", str(path), "--evidence-root", directory)
                 self.assertEqual("unknown", json.loads(out)["results"][0]["evidence"][0]["state"])
+            for separator in ["\r", "\r\n", "\u2028", "\u2029"]:
+                path.write_bytes(("// comment" + separator + "import image from 'sharp';" + separator + "image(input);").encode("utf-8"))
+                _, out, _ = self.cli("--source", str(path), "--evidence-root", directory)
+                evidence = json.loads(out)["results"][0]["evidence"][0]
+                self.assertEqual(("candidate", 3), (evidence["state"], evidence["line"]))
 
     def test_all_adapter_inputs_are_protected_even_with_force_and_no_execution(self):
         with tempfile.TemporaryDirectory() as directory:

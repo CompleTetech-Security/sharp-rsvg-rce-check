@@ -124,7 +124,8 @@ def metadata_results(path, root, mode, prefix):
                         raise ContractError("Invalid or excessive dependencies")
                     if "link" in item and type(item["link"]) is not bool:
                         raise ContractError("Invalid npm link flag")
-                    if name == "sharp" or item.get("name") == "sharp":
+                    alias = isinstance(item.get("version"), str) and item["version"].startswith("npm:sharp@")
+                    if name == "sharp" or item.get("name") == "sharp" or alias:
                         selected.append(("Sharp", item.get("version"), bool(item.get("link")) or lv != 1))
                     if "dependencies" in item:
                         pending.append((item["dependencies"], depth + 1))
@@ -177,6 +178,7 @@ def metadata_results(path, root, mode, prefix):
 # Lexer bundled from vm2-nesting-check 1cd5347, under the same licensing.
 def _js_tokens(text):
     """Bounded lexical hints, not a JavaScript parser. Never retain source strings."""
+    text = text.replace("\r\n", "\n").replace("\r", "\n").replace("\u2028", "\n").replace("\u2029", "\n")
     tokens = []
     index, line = 0, 1
     while index < len(text):
