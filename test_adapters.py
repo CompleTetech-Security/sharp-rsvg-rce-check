@@ -113,6 +113,7 @@ class AdapterTests(unittest.TestCase):
     def test_cyclonedx_spdx_and_uncovered_metadata_never_infer_selection(self):
         fixtures = [
             {"bomFormat": "CycloneDX", "specVersion": "1.6", "components": [{"name": "sharp", "version": "0.35.5", "components": [{"name": "librsvg", "version": "2.63.2"}]}]},
+            {"bomFormat": "CycloneDX", "specVersion": "1.6", "metadata": {"component": {"name": "sharp", "version": "0.35.5", "components": [{"name": "librsvg", "version": "2.63.2"}]}}},
             {"spdxVersion": "SPDX-2.3", "packages": [{"name": "sharp", "versionInfo": "0.35.5"}, {"name": "librsvg", "versionInfo": "2.63.2"}]},
         ]
         with tempfile.TemporaryDirectory() as directory:
@@ -127,6 +128,23 @@ class AdapterTests(unittest.TestCase):
             path.write_text('{"bomFormat":"CycloneDX","specVersion":"1.6","components":[]}', encoding="utf-8")
             _, out, _ = self.cli("--sbom", str(path), "--evidence-root", directory)
             self.assertEqual("unknown", json.loads(out)["results"][0]["evidence"][0]["state"])
+
+    def test_malformed_sbom_versions_and_names_are_controlled_input_errors(self):
+        cases = [
+            {"bomFormat": "CycloneDX", "specVersion": []},
+            {"spdxVersion": {}},
+            {"bomFormat": "CycloneDX", "specVersion": "1.6", "components": [{"name": []}]},
+            {"spdxVersion": "SPDX-2.3", "packages": [{"name": {}}]},
+            {"bomFormat": "CycloneDX", "specVersion": "1.6", "metadata": {"component": []}},
+            {"bomFormat": "CycloneDX", "specVersion": "1.6", "components": [{"name": "sharp", "version": []}]},
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bom.json"
+            for data in cases:
+                path.write_text(json.dumps(data), encoding="utf-8")
+                code, out, err = self.cli("--sbom", str(path), "--evidence-root", directory)
+                self.assertEqual((2, ""), (code, out))
+                self.assertNotIn("Traceback", err)
 
     def test_source_decode_block_and_unblock_are_only_candidates(self):
         with tempfile.TemporaryDirectory() as directory:

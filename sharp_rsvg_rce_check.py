@@ -657,6 +657,8 @@ def elf_result(path, root, asset_id):
 
 
 def _metadata_version_result(component, version, relative, asset_id, *, uncertain=False):
+    if version is not None and not isinstance(version, str):
+        raise ContractError("Metadata version must be text or missing")
     exact = exact_version(version) if isinstance(version, str) else None
     value = version if exact and not uncertain else None
     detail = component + " metadata version: " + (value or "missing, qualified, linked or conflicting") + ". Library linkage and build provenance remain unknown; this is not a patch verdict."
@@ -703,8 +705,15 @@ def metadata_results(path, root, mode, prefix):
                         selected.append(("Sharp", item.get("version"), bool(item.get("link")) or lv != 1))
                     if "dependencies" in item:
                         pending.append((item["dependencies"], depth + 1))
-    elif data.get("bomFormat") == "CycloneDX" and data.get("specVersion") in {"1.4", "1.5", "1.6"}:
+    elif data.get("bomFormat") == "CycloneDX" and isinstance(data.get("specVersion"), str) and data["specVersion"] in {"1.4", "1.5", "1.6"}:
         pending = [data.get("components", [])]
+        metadata = data.get("metadata", {})
+        if not isinstance(metadata, dict):
+            raise ContractError("Invalid SBOM metadata")
+        if "component" in metadata:
+            if not isinstance(metadata["component"], dict):
+                raise ContractError("Invalid SBOM subject component")
+            pending.append([metadata["component"]])
         count = 0
         while pending:
             components = pending.pop()
@@ -714,17 +723,21 @@ def metadata_results(path, root, mode, prefix):
                 count += 1
                 if count > 10000 or not isinstance(item, dict):
                     raise ContractError("Invalid or excessive SBOM components")
+                if "name" in item and not isinstance(item["name"], str):
+                    raise ContractError("SBOM component name must be text")
                 if item.get("name") in {"sharp", "librsvg"}:
                     selected.append(("Sharp" if item["name"] == "sharp" else "librsvg", item.get("version"), False))
                 if "components" in item:
                     pending.append(item["components"])
-    elif data.get("spdxVersion") in {"SPDX-2.2", "SPDX-2.3"}:
+    elif isinstance(data.get("spdxVersion"), str) and data["spdxVersion"] in {"SPDX-2.2", "SPDX-2.3"}:
         packages = data.get("packages", [])
         if not isinstance(packages, list) or len(packages) > 10000:
             raise ContractError("Invalid or excessive SPDX packages")
         for item in packages:
             if not isinstance(item, dict):
                 raise ContractError("Invalid SPDX package")
+            if "name" in item and not isinstance(item["name"], str):
+                raise ContractError("SPDX package name must be text")
             if item.get("name") in {"sharp", "librsvg"}:
                 selected.append(("Sharp" if item["name"] == "sharp" else "librsvg", item.get("versionInfo"), False))
     else:
