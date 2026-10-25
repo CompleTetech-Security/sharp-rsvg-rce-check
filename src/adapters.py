@@ -156,7 +156,10 @@ def metadata_results(path, root, mode, prefix):
                     raise ContractError("Invalid or excessive SBOM components")
                 if "name" in item and not isinstance(item["name"], str):
                     raise ContractError("SBOM component name must be text")
-                if item.get("name") in {"sharp", "librsvg"}:
+                group = item.get("group", "")
+                if not isinstance(group,str):
+                    raise ContractError("CycloneDX component namespace must be text")
+                if not group and item.get("name") in {"sharp", "librsvg"}:
                     selected.append(("Sharp" if item["name"] == "sharp" else "librsvg", item.get("version"), False))
                 if "components" in item:
                     pending.append(item["components"])
