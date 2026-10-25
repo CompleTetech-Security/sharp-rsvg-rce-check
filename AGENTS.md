@@ -14,7 +14,7 @@ scanning, application execution, image decoding or exploit payloads.
 ## Project map
 
 - `sharp_rsvg_rce_check.py`: generated, standalone Python 3.10+ executable.
-- `src/checker.py`, `vendor/common.py`: product logic and vendored evidence/report helpers.
+- `src/checker.py`, `src/adapters.py`, `vendor/common.py`: product logic and vendored evidence/report helpers.
 - `rules/snapshot.json`: dated, source-linked enabled rule snapshot.
 - `tools/build.py`: deterministic single-file build and release checksums.
 - `test_assessment.py`, `test_contract.py`: synthetic offline behavior tests.

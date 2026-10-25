@@ -6,7 +6,7 @@ import argparse
 import sys
 
 TOOL_NAME = "sharp-rsvg-rce-check"
-TOOL_VERSION = "0.1.0"
+TOOL_VERSION = "0.2.0"
 RULE_ID = "CVE-2026-96889"
 RULE_DATE = "2026-10-24"
 SNAPSHOT_ID = "sharp-rsvg-2026-10-24.1"
@@ -36,7 +36,7 @@ RECORD_SCHEMA = _object({
 INPUT_SCHEMA = _object({"schema_version": {"const": "1.0"},
                         "records": _array(RECORD_SCHEMA, MAX_RECORDS, 1)})
 LIMITATIONS = [
-    "Offline operator-supplied evidence only; library selection, deployed versions, provenance and effective mitigations are not independently attested.",
+    "Offline supplied evidence and explicitly selected metadata only; library selection, deployed versions, provenance and effective mitigations are not independently attested.",
     "No network requests, application execution, image decoding, exploitation, reachability test or compromise detection is performed.",
     "The Sharp comparison covers exact stable 0.0-0.35 versions. Global librsvg has a documented remediation build, not a published independent affected-version range; only stable 2.63.2+ within 2.63 is accepted as reported remediation.",
     "PIE is an RCE mitigation, not a library patch or a guarantee against other memory-corruption impact. Unknown libc or PIE remains unknown.",
@@ -139,7 +139,7 @@ def assess_record(raw):
     details = {
         "glibc-linux": "Reported platform: " + platform + "; reported libc: " + libc + ". Other platforms do not establish that the underlying memory bug is absent.",
         "svg-decoding": "Reported effective SVG decoder state: " + record["svg_decoder"] + ". A blocked claim must cover VipsForeignLoadSvg in the deployed process.",
-        "node-without-pie": "Reported Node executable PIE state: " + record["node_pie"] + ". No binary inspection is performed.",
+        "node-without-pie": "Reported Node executable PIE state: " + record["node_pie"] + ". This operator claim is not inferred from optional binary metadata hints.",
         "untrusted-svg-input": "Operator-reviewed untrusted SVG input path: " + record["untrusted_svg"] + ". No data-flow or reachability test is performed.",
     }
     preconditions = []
@@ -186,6 +186,11 @@ def publish_results(args, results, protected, *, complete, state=None):
 def build_parser():
     parser = argparse.ArgumentParser(description="Offline CVE-2026-96889 Sharp/librsvg evidence assessment. No network, application execution or image decoding.")
     parser.add_argument("--inventory", type=Path, help="Bounded schema-v1 JSON inventory; cannot be combined with per-asset options.")
+    parser.add_argument("--npm-lock", action="append", default=[], type=Path, help="Explicit npm lock v1/v2/v3 metadata; never invokes npm")
+    parser.add_argument("--sbom", action="append", default=[], type=Path, help="Explicit CycloneDX 1.4-1.6 or SPDX 2.2/2.3 JSON metadata")
+    parser.add_argument("--node-elf", action="append", default=[], type=Path, help="Explicit ELF file for bounded layout/interpreter hints; never executed or attested as Node")
+    parser.add_argument("--source", action="append", default=[], type=Path, help="Explicit JS/TS file for import-associated Sharp input/block candidates")
+    parser.add_argument("--evidence-root", type=Path, help="Required for adapter files; evidence locations are relative to this directory")
     parser.add_argument("--sharp-version", action="append", dest="sharp_versions", help="Reported stable Sharp version; repeat to preserve conflicts.")
     parser.add_argument("--librsvg-version", action="append", dest="librsvg_versions", help="Independently reported native librsvg version; repeat to preserve conflicts.")
     parser.add_argument("--asset-id", help="Opaque identifier, at most 64 ASCII letters/digits/dot/underscore/hyphen; default asset-0001.")
@@ -214,23 +219,49 @@ def main(argv=None):
     selected = {key: getattr(args, key) for key in RECORD_SCHEMA["properties"] if getattr(args, key, None) is not None}
     if args.inventory and selected:
         parser.error("--inventory cannot be combined with per-asset options")
-    if not args.inventory and not (args.sharp_versions or args.librsvg_versions):
-        parser.error("provide --inventory, --sharp-version or --librsvg-version")
+    adapter_files = [*args.npm_lock, *args.sbom, *args.node_elf, *args.source]
+    if not args.inventory and not (args.sharp_versions or args.librsvg_versions or adapter_files):
+        parser.error("provide --inventory, a reported version or explicit adapter files")
     results, protected = [], [Path(__file__)]
     publication = {"stdout_started": False, "published": False}
     if args.inventory:
         protected.append(args.inventory)
+    protected.extend(adapter_files)
     if args.logo:
         protected.append(args.logo)
     try:
         if args.logo and args.format != "html":
             raise ContractError("logo requires HTML output")
+        if len(adapter_files) > 100 or (adapter_files and (args.evidence_root is None or not args.evidence_root.is_dir())):
+            raise ContractError("Adapter inputs require an evidence root and at most 100 files")
+        for path in adapter_files:
+            adapter_path(path, args.evidence_root)
+        for path in args.source:
+            if path.suffix.lower() not in {".js", ".cjs", ".mjs", ".ts", ".cts", ".mts", ".jsx", ".tsx"}:
+                raise ContractError("Source must be an explicit JS/TS file")
         if args.inventory:
             records = read_inventory(args.inventory)
-        else:
+        elif selected:
             records = [normalize_record({"asset_id": "asset-0001", **selected})]
+        else:
+            records = []
         for record in records:
             results.append(assess_record(record))
+        asset_ids = {result["asset_id"] for result in results}
+        for mode, files in [("npm", args.npm_lock), ("sbom", args.sbom), ("elf", args.node_elf), ("source", args.source)]:
+            for index, path in enumerate(files):
+                prefix = "adapter-" + mode + "-" + str(index + 1)
+                if mode == "elf":
+                    added = [elf_result(path, args.evidence_root, prefix)]
+                elif mode == "source":
+                    added = source_results(path, args.evidence_root, prefix)
+                else:
+                    added = metadata_results(path, args.evidence_root, mode, prefix)
+                for result in added:
+                    if result["asset_id"] in asset_ids or len(results) >= MAX_RECORDS:
+                        raise ContractError("Duplicate or excessive combined result records")
+                    asset_ids.add(result["asset_id"])
+                    results.append(result)
         publish_results(args, results, protected, complete=True, state=publication)
         if args.fail_on_finding and any(result["version_assessment"] == "affected" for result in results):
             return 1

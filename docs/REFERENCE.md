@@ -63,3 +63,66 @@ A reported fixed component does not fail the unknown gate solely for missing opt
 ## Reproducibility
 
 `rules/snapshot.json` is embedded by `tools/build.py`; reports include its canonical SHA-256 (sorted keys, compact JSON, UTF-8 and final newline). `SHA256SUMS` covers the generated single file and source snapshot. Checksums detect differences; they are not publisher signatures. `python tools/build.py --check` verifies both the generated source and release checksums. Runtime assessment never fetches a rule update.
+
+## Explicit local metadata and source adapters
+
+```sh
+python sharp_rsvg_rce_check.py --npm-lock examples/package-lock.example.json --evidence-root examples
+python sharp_rsvg_rce_check.py --source examples/source.example.js --evidence-root examples --format html
+python sharp_rsvg_rce_check.py --node-elf path/to/node --evidence-root path/to
+python sharp_rsvg_rce_check.py --sbom path/to/bom.json --evidence-root path/to
+```
+
+The repeatable `--npm-lock`, `--sbom`, `--node-elf` and `--source` options require
+`--evidence-root`. Selected files must resolve inside that directory; paths in
+reports are relative. They may accompany existing inventory/version inputs, but
+produce separate generated `adapter-*` asset records. Generated identifiers must
+not collide with supplied inventory IDs. No directory search, package-manager
+operation, application import, native execution or image decoding occurs.
+
+All adapter results remain `unknown` with `not_tested` exploitability. Metadata
+cannot identify a deployed native-library selection or publisher patch
+provenance. It never fills operator preconditions, changes a separate version
+assessment or establishes effective mitigation. The existing schema 1.0 evidence
+contract carries these observations as inventory/source evidence and locations;
+JSON, CSV and HTML use the same validated records.
+
+- npm lock v1/v2/v3: extract Sharp package version observations, including nested
+  instances and explicit aliases. Linked/malformed/qualified identities stay
+  unknown. Legacy v2 dependency records are separate uncertain observations,
+  never used to clear a conflicting primary entry. Registry URLs and scripts
+  are not collected. Empty supported coverage does not establish absence.
+- SBOM: support JSON CycloneDX 1.4/1.5/1.6 and SPDX 2.2/2.3 Sharp/librsvg package
+  metadata. Names and versions remain supplied metadata, not linkage evidence;
+  no external references are fetched and no package paths are opened.
+- ELF: read the identification/header, at most 1,024 standard-size program
+  headers and one interpreter string (512 bytes maximum). Support ELF32/64 in
+  both byte orders; bound file size to 2 GiB and metadata reads to 58 KiB. Reject
+  truncated/out-of-file tables/segments, duplicate interpreters, extended header
+  counts and unsupported layouts. ET_DYN with an interpreter is a dynamic
+  executable candidate; ET_DYN alone can also be a shared library or static PIE.
+  ET_EXEC and interpreter basename hints are reported without asserting Node
+  identity, loaded libc, runtime PIE, patch state or safety. Exact loader paths
+  are not reported. Other hardening features are not analyzed.
+- Source: explicitly select JS/TS files. Simple Sharp default imports/CommonJS
+  bindings identify factory and block/unblock call candidates with relative
+  lines. An SVG-loader marker in a bounded local window can belong to unrelated
+  code. No match, missing marker, unknown options, inactive blocks, shadowing,
+  ordering or dynamic syntax never establishes effective blocking or input
+  trust. Templates and regex/division ambiguity require manual review. Source
+  strings/snippets are not reported.
+
+Budgets: 100 adapter files, 1,000 combined result records, bounded 4 MiB JSON/text
+reads and the existing JSON structure/depth limit; 10,000 package metadata
+entries, 200,000 source tokens/file and 100 source candidates/file. Ordinary
+regular-file checks require stable evidence copies, not a filesystem sandbox.
+Output protection includes all selected evidence files and aliases, even with
+--force. `--fail-on-unknown` includes these unknown adapter records.
+
+Format provenance reviewed 2026-10-25: [Linux ELF header/program-header layouts](https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h),
+[npm lock grammar](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json/),
+[CycloneDX 1.6 schema](https://github.com/CycloneDX/specification/blob/master/schema/bom-1.6.schema.json) and
+[SPDX package fields](https://spdx.github.io/spdx-spec/v2.3.1/package-information/).
+The Linux Foundation gABI pages were access-denied; no access restriction was
+bypassed. Advisory thresholds, rule date and native affected-range uncertainty
+are unchanged. Edit `src/adapters.py` and rebuild with `python tools/build.py`.
