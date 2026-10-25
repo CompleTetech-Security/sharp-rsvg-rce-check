@@ -18,3 +18,7 @@ The original research foundation is preserved in Git history and `advisory.json`
 - [ ] Complete independent review and verify hosted CI for the exact final PR commit before merge.
 
 No real system was assessed during implementation. Local verification, hosted CI and independent review are separate evidence. A rule enabled in this implementation does not establish live exposure, exploitation or production readiness.
+
+## Local metadata adapters (2026-10-25)
+
+Implemented bounded npm/SBOM package observations, explicit ELF header/program metadata inspection and Sharp source input/block/unblock candidates. Results preserve the existing schema and remain separate unknown records; no runtime precondition, effective mitigation or native patch provenance is inferred. Synthetic ELF32/64/endian/layout/truncation, metadata/link/SBOM, source inactivity, output-protection/parity and standalone tests are included. GitHub Copilot review and exact-head CI are required before merge.
