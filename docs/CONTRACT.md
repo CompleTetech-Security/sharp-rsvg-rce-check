@@ -165,7 +165,16 @@ Unverified research leads must remain disabled or outside the active snapshot.
 ## Deterministic formats
 
 Canonical JSON uses the same stable encoding as snapshot hashing. It includes
-no runtime clock, absolute input path, or implicit filename-derived label.
+no absolute input path or implicit filename-derived label. The run envelope includes
+required `generated_at` (a real UTC `YYYY-MM-DDTHH:MM:SSZ` assessment timestamp) and
+`tool.executable_sha256` (lowercase SHA-256 of the executing standalone bytes).
+These identify this assessment run, not evidence acquisition or deployed patch state.
+The CLI captures the envelope once and retains it through incomplete recovery.
+`make_report` accepts injected values for deterministic fixtures; canonical assessment
+results and rule hashing remain independent of the clock. CSV and HTML retain this
+envelope together with rule snapshot ID, verification date, digest and completeness,
+including empty reports. The new required fields update the closed schema-v1 report
+contract; older report fixtures must add them rather than infer them from file dates.
 Callers must traverse and order observations deterministically; list order is
 preserved to avoid silently changing the meaning of configuration operations.
 

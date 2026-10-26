@@ -27,6 +27,8 @@ def affected(**overrides):
 
 
 def report(result=None, **overrides):
+    overrides.setdefault("generated_at", "2026-10-25T12:34:56Z")
+    overrides.setdefault("executable_sha256", "a" * 64)
     return contract.make_report("synthetic-check", "0.1.0", "synthetic-1", "2026-10-23",
                                 [result or affected()], **overrides)
 
@@ -181,7 +183,7 @@ class RuleAndReportTests(unittest.TestCase):
         with self.assertRaises(contract.ContractError):
             contract.snapshot_digest(snapshot)
 
-    def test_reports_are_deterministic_without_wall_clock_or_input_mutation(self):
+    def test_reports_are_deterministic_with_injected_context_without_input_mutation(self):
         result = affected()
         value = report(result)
         result["reasons"].append("changed later")
@@ -189,7 +191,8 @@ class RuleAndReportTests(unittest.TestCase):
         first = contract.canonical_json(value)
         second = contract.canonical_json(dict(reversed(list(value.items()))))
         self.assertEqual(first, second)
-        self.assertNotIn("generated_at", first)
+        self.assertEqual("2026-10-25T12:34:56Z", value["generated_at"])
+        self.assertEqual("a" * 64, value["tool"]["executable_sha256"])
 
     def test_html_escapes_every_untrusted_text_and_contains_no_external_assets(self):
         result = affected(component='<img src=x onerror="alert(1)">', reasons=["<script>alert(1)</script>"], recommendation='<a href="javascript:x">x</a>')
