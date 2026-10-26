@@ -11,6 +11,13 @@ python sharp_rsvg_rce_check.py --library-source global --librsvg-version 2.63.2 
 
 `--sharp-version` and `--librsvg-version` are repeatable (at most eight observations each). Repeated equal values agree; different values conflict. Accepted comparison values are plain three-part stable versions, without leading zeroes, whitespace, `v`, ranges, prereleases, vendor suffixes or build metadata. Invalid version text is not echoed in reports.
 
+The `sharp-versions` and `librsvg-versions` evidence records retain their distinct
+accepted exact values in the existing bounded `detail` string, sorted and
+deduplicated. JSON, CSV's serialized evidence and HTML carry the same component
+association. Accepted values are retained even alongside invalid observations;
+the invalid raw strings are omitted and the assessment stays uncertain. This
+uses the existing schema 1.0 evidence shape without a new field or schema change.
+
 An explicit library selection is required for classification. `bundled` uses the Sharp threshold and Sharp provenance; `global` uses independent librsvg evidence and its own provenance. Supplying both sets of version evidence does not merge their identities. With a bundle, additional native-library evidence must have upstream provenance, stay within the reviewed 2.63 line and agree on the fix side; disagreement or possible backport evidence stays unknown. In global mode, missing Sharp metadata is allowed, but supplied malformed/conflicting Sharp observations keep the overall result unknown.
 
 ## JSON inventory

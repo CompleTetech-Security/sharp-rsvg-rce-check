@@ -51,6 +51,11 @@ The [maintainer advisory](https://github.com/lovell/sharp/security/advisories/GH
 
 Malformed, conflicting, qualified, prerelease and uncovered-future versions remain unknown. Contradictory Sharp/native-library observations also remain unknown. The embedded snapshot has no updater; consult the current vendor guidance for remediation.
 
+Reports retain every distinct accepted exact Sharp and librsvg version in each
+component's evidence detail, including conflicting observations. Repeated equal
+values are deduplicated and sorted; qualified or malformed raw strings are not
+exported. Retaining a candidate never selects it as the assessed version.
+
 JSON, formula-neutralized CSV and a self-contained, script-free HTML report use the same validated evidence records. HTML supports escaped `--brand` and an optional bounded local raster `--logo`. See the [actual synthetic HTML example](docs/example-report.html); retained images in `docs/images/` are earlier concept artwork, not generated results.
 
 ## Documentation and development

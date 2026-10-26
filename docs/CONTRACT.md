@@ -1,5 +1,11 @@
 # Security evidence contract v1.0
 
+Sharp's `sharp-versions` and `librsvg-versions` inventory evidence details retain
+each distinct accepted exact version, sorted and deduplicated within the input
+limit of eight observations per component. Invalid/qualified raw text is omitted.
+The existing bounded detail field carries this information in all renderers;
+the schema shape and conservative conflict classification are unchanged.
+
 Each checker repository owns its implementation, embedded advisory snapshot,
 and copy of this contract. The executable is self-contained and does not import
 another checker repository or a hosted rules service. The helpers are vendored
