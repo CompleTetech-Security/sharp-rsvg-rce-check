@@ -5,6 +5,9 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -89,6 +92,26 @@ class ProvenanceTests(unittest.TestCase):
         report = json.loads(stdout.getvalue())
         self.assertEqual(hashlib.sha256(Path(c.__file__).read_bytes()).hexdigest(), report['tool']['executable_sha256'])
         self.assertRegex(report['generated_at'], r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$')
+
+    def test_copied_and_symlink_invocations_hash_actual_executable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / 'copied.py'
+            copied.write_bytes(Path(c.__file__).read_bytes() + b'\n# synthetic installation copy\n')
+            result = subprocess.run([sys.executable, str(copied), *BASE], capture_output=True, text=True)
+            self.assertEqual(0, result.returncode, result.stderr)
+            expected = hashlib.sha256(copied.read_bytes()).hexdigest()
+            self.assertEqual(expected, json.loads(result.stdout)['tool']['executable_sha256'])
+            linked = Path(directory) / 'linked.py'
+            try:
+                linked.symlink_to(copied)
+            except OSError:
+                self.skipTest('Symlink creation unavailable on this platform')
+            result = subprocess.run([sys.executable, str(linked), *BASE], capture_output=True, text=True)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(expected, json.loads(result.stdout)['tool']['executable_sha256'])
+            # Executable aliases are supported without allowing evidence aliases.
+            with self.assertRaises(c.ContractError):
+                c._read_regular_file(linked, c.MAX_JSON_BYTES)
 
 
 if __name__ == '__main__':

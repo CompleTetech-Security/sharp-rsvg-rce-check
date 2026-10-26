@@ -327,7 +327,11 @@ def utc_now():
 
 def executable_digest():
     """Identify actual standalone bytes; this is not deployed patch attestation."""
-    return hashlib.sha256(_read_regular_file(Path(__file__), MAX_JSON_BYTES)).hexdigest()
+    try:
+        executable = Path(__file__).resolve(strict=True)
+    except RuntimeError:
+        raise ContractError("Executable path could not be resolved") from None
+    return hashlib.sha256(_read_regular_file(executable, MAX_JSON_BYTES)).hexdigest()
 
 
 def make_report(tool, tool_version, snapshot_id, rules_as_of, results, *, complete=True,

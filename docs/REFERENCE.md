@@ -52,6 +52,11 @@ All formats share the [v1 evidence contract](CONTRACT.md). JSON includes `genera
 
 CSV retains all existing columns and appends `tool`, `tool_version`, `executable_sha256`, `generated_at`, `rules_snapshot_id`, and `rules_sha256` on result and empty summary rows. It serializes structured dimensions as JSON cells and neutralizes spreadsheet formulas, including summary metadata. An interrupted report with no completed assets has a `record_type=summary` row. HTML escapes dynamic text, displays run assessment time separately from rule verification, blocks remote resources, contains no scripts, supports printing, and accepts `--brand TEXT` and `--logo FILE` (PNG/JPEG/GIF/WebP, at most 1 MiB; logo only with HTML). No logo is selected by default. These provenance fields are required by the updated closed report schema; consumers of older schema-v1 report fixtures must update them together.
 
+Invoking the standalone checker through an executable symlink hashes the resolved
+checker file. Copied standalone files hash their own bytes. This exception applies
+only to locating the executing checker; evidence and output symlink protections
+remain unchanged.
+
 Build numbers and asset IDs are operator-provided; review them before sharing a report. Invalid inventory/file errors use controlled descriptions instead of raw input paths or content. Argument-parser usage errors can include the explicit command-line arguments.
 
 ## Status and exit policy
