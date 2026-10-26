@@ -126,8 +126,12 @@ def assess_record(raw):
                  "detail": "Operator-reported library selection: " + record["library_source"] + "; linkage is not independently verified."}]
     for key, label in (("sharp_versions", "Sharp"), ("librsvg_versions", "librsvg")):
         value, _, state = version_observation(record[key])
+        accepted = sorted({item for item in record[key] if exact_version(item) is not None})
+        detail = label + " version observation: " + (value if value else "missing, qualified or conflicting") + "."
+        if accepted:
+            detail += " Accepted exact observations: " + ", ".join(accepted) + "."
         evidence.append({"id": key.replace("_", "-"), "kind": "inventory", "state": state,
-                         "detail": label + " version observation: " + (value if value else "missing, qualified or conflicting") + "."})
+                         "detail": detail})
     platform, libc = record["platform"], record["libc"]
     glibc = "absent" if platform == "other" or (platform == "linux" and libc in {"musl", "other"}) else "present" if platform == "linux" and libc == "glibc" else "unknown"
     states = {

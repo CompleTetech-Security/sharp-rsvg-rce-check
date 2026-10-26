@@ -13,3 +13,9 @@ An operator must establish the input path and effective process configuration in
 Use build records, native linkage evidence and documented vendor patch provenance from the deployment being assessed. Keep conflicting evidence together; do not delete it or relabel a build to obtain a fixed result. Consult current upstream/vendor guidance, rebuild and redeploy as appropriate, and verify the effective deployed process separately. There is no public-website mode because ordinary response metadata cannot answer these questions.
 
 The 2026-10-25 adapters emit separate unknown records: neither an ELF layout hint nor a lexical block call is an established runtime precondition or mitigation. Metadata package versions do not attest library selection or provenance. See the reference for exact format coverage and bounds.
+
+For explicit version observations, each component's exported evidence preserves
+all distinct accepted exact values, including conflicts. Only validated stable
+version strings are retained, never malformed or qualified raw text. This makes
+distinct conflicts reproducible while keeping the selected version null and
+the assessment unknown; it does not establish which version is deployed.
