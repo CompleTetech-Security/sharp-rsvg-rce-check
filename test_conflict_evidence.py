@@ -19,7 +19,10 @@ class ConflictEvidenceTests(unittest.TestCase):
         for value in native:
             args += ['--librsvg-version', value]
         out = io.StringIO()
-        with patch('socket.socket', side_effect=AssertionError('offline')), contextlib.redirect_stdout(out):
+        with patch('socket.socket', side_effect=AssertionError('offline')), \
+                patch.object(check, 'utc_now', return_value='2026-10-25T12:34:56Z'), \
+                patch.object(check, 'executable_digest', return_value='a' * 64), \
+                contextlib.redirect_stdout(out):
             self.assertEqual(0, check.main(args))
         return out.getvalue()
 

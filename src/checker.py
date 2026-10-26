@@ -177,6 +177,7 @@ def publish_results(args, results, protected, *, complete, state=None):
     state = {} if state is None else state
     report = make_report(TOOL_NAME, TOOL_VERSION, SNAPSHOT_ID, RULE_DATE, results,
                          complete=complete, limitations=LIMITATIONS,
+                         generated_at=state.get("generated_at"), executable_sha256=state.get("executable_sha256"),
                          snapshot_digest=snapshot_digest(RULE_SNAPSHOT))
     rendered = canonical_json(report) if args.format == "json" else render_csv(report) if args.format == "csv" else render_html(report, brand=args.brand, logo=args.logo)
     if args.output:
@@ -234,6 +235,7 @@ def main(argv=None):
     if args.logo:
         protected.append(args.logo)
     try:
+        publication["generated_at"], publication["executable_sha256"] = utc_now(), executable_digest()
         if args.logo and args.format != "html":
             raise ContractError("logo requires HTML output")
         if len(adapter_files) > 100 or (adapter_files and (args.evidence_root is None or not args.evidence_root.is_dir())):

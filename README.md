@@ -58,6 +58,12 @@ exported. Retaining a candidate never selects it as the assessed version.
 
 JSON, formula-neutralized CSV and a self-contained, script-free HTML report use the same validated evidence records. HTML supports escaped `--brand` and an optional bounded local raster `--logo`. See the [actual synthetic HTML example](docs/example-report.html); retained images in `docs/images/` are earlier concept artwork, not generated results.
 
+Every report includes one UTC run assessment timestamp, the exact standalone
+executable SHA-256, rule snapshot ID/date/hash and completeness. Empty and
+interrupted CSV summaries retain the same provenance. Assessment time is distinct
+from rule verification and evidence acquisition; build identity never attests a
+deployed patch. Injected time/build metadata keeps synthetic library calls reproducible.
+
 ## Documentation and development
 
 - [Reference](docs/REFERENCE.md): input schema, CLI, limits, outputs and exit policy
