@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/banner.png" alt="sharp-rsvg-rce-check by CompleteTech LLC" width="100%">
+</p>
+
 # sharp-rsvg-rce-check
 
 [![Tests](https://github.com/completetech-security/sharp-rsvg-rce-check/actions/workflows/tests.yml/badge.svg)](https://github.com/completetech-security/sharp-rsvg-rce-check/actions/workflows/tests.yml)
@@ -8,6 +12,15 @@
 Assess **CVE-2026-96889 / GHSA-wq5f-xc86-pv6w**, the librsvg memory vulnerability used through Sharp, from explicit offline evidence. Copy `sharp_rsvg_rce_check.py` and run it with Python 3.10+. No packages, Node.js, companion files or network access are required.
 
 The checker keeps the selected native library, reported version, provenance, platform, libc, SVG input path and hardening separate. It does not import Sharp, execute applications, decode an image, send a probe, test reachability or detect compromise. Every result retains `exploitability: not_tested`.
+
+## Synthetic report preview
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/report-dark.png">
+  <img src="docs/images/report-light.png" alt="Sharp / librsvg synthetic report" width="100%">
+</picture>
+
+[Open the synthetic example report](docs/example-report.html). Example data only; this is not a live assessment.
 
 ## Quick start
 
