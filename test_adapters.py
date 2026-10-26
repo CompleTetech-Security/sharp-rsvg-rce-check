@@ -34,6 +34,17 @@ class AdapterTests(unittest.TestCase):
             code = c.main(list(args))
         return code, out.getvalue(), err.getvalue()
 
+    def test_cyclonedx_namespace_does_not_become_unscoped_package(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/"bom.json"
+            data=dict(bomFormat="CycloneDX",specVersion="1.6",components=[dict(group="@vendor",name="sharp",version="0.35.4",components=[dict(name="sharp",version="0.35.5")])])
+            path.write_text(json.dumps(data),encoding="utf-8")
+            rows=c.metadata_results(path,Path(directory),"sbom","subject")
+            self.assertEqual(["0.35.5"],[row["component"]["version"] for row in rows])
+            data["components"][0]["group"]=[]
+            path.write_text(json.dumps(data),encoding="utf-8")
+            with self.assertRaises(c.ContractError):c.metadata_results(path,Path(directory),"sbom","subject")
+
     def test_arrow_return_regex_body_is_opaque(self):
         tokens = c._js_tokens("const pattern = () => /const image = require('sharp'); image(input)/;")
         self.assertIn("@regex", [value for value, _ in tokens])

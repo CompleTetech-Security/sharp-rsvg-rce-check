@@ -126,3 +126,7 @@ Format provenance reviewed 2026-10-25: [Linux ELF header/program-header layouts]
 The Linux Foundation gABI pages were access-denied; no access restriction was
 bypassed. Advisory thresholds, rule date and native affected-range uncertainty
 are unchanged. Edit `src/adapters.py` and rebuild with `python tools/build.py`.
+
+CycloneDX component namespaces (`group`) must be text; a nonempty namespace is
+not treated as an unscoped Sharp/librsvg identity. Nested components continue to
+be traversed independently. Unsupported identity remains unknown coverage.
